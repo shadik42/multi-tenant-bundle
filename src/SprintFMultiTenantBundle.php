@@ -6,6 +6,7 @@ use SprintF\Bundle\MultiTenant\Doctrine\Filter\TenantFilter;
 use SprintF\Bundle\MultiTenant\EventListener\TenantEventListener;
 use SprintF\Bundle\MultiTenant\Registry\DoctrineRepositoryTenantRegistry;
 use SprintF\Bundle\MultiTenant\Registry\TenantRegistryInterface;
+use SprintF\Bundle\MultiTenant\Resolver\DomainsMapTenantResolver;
 use SprintF\Bundle\MultiTenant\Resolver\DomainTenantResolver;
 use SprintF\Bundle\MultiTenant\Resolver\QueryTenantResolver;
 use SprintF\Bundle\MultiTenant\Resolver\SubdomainTenantResolver;
@@ -52,7 +53,7 @@ class SprintFMultiTenantBundle extends AbstractBundle
                 ->enumNode('resolver')
                     ->cannotBeEmpty()
                     // Список реализованных резолверов
-                    ->values(['query', 'subdomain', 'domain'])
+                    ->values(['query', 'subdomain', 'domain','domains_map'])
                     ->defaultValue('query')
                     ->info('The name of the tenant resolver')
                 ->end() // resolver
@@ -87,10 +88,10 @@ class SprintFMultiTenantBundle extends AbstractBundle
                 ->end() // subdomain
 
                 // Конфигурация резолвера на основе домена хоста запроса
-                ->arrayNode('domain')
+                ->arrayNode('domains_map')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->arrayNode('domains_map')
+                        ->arrayNode('map')
                             ->useAttributeAsKey('domain')
                             ->scalarPrototype()->end()
                             ->defaultValue([])
@@ -146,9 +147,17 @@ class SprintFMultiTenantBundle extends AbstractBundle
                 // Резолвер на основе хоста запроса
                 $builder->register(DomainTenantResolver::class)
                     ->setAutowired(true)
-                    ->setAutoconfigured(true)
-                    ->setArgument('$domainsMap', $config['domain']['domains_map']);
+                    ->setAutoconfigured(true);
                 $builder->setAlias(TenantResolverInterface::class, DomainTenantResolver::class);
+                break;
+
+            case 'domains_map':
+                // Резолвер на основе хоста запроса из файла конфигурации
+                $builder->register(DomainsMapTenantResolver::class)
+                    ->setAutowired(true)
+                    ->setAutoconfigured(true)
+                    ->setArgument('$domainsMap', $config['domains_map']['map']);
+                $builder->setAlias(TenantResolverInterface::class, DomainsMapTenantResolver::class);
                 break;
         }
     }

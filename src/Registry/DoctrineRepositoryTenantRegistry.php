@@ -30,4 +30,9 @@ class DoctrineRepositoryTenantRegistry implements TenantRegistryInterface
     {
         return $this->entityManager->getRepository($this->tenantEntityClass)->findOneBy(['slug' => $slug]);
     }
+
+    public function findOneByDomain(string $domain): ?TenantInterface
+    {
+        return $this->entityManager->getRepository($this->tenantEntityClass)->findOneBy(['domain' => $domain]);
+    }
 }

@@ -26,4 +26,9 @@ interface TenantRegistryInterface
      * Метод поиска арендатора по уникальному символическому имени.
      */
     public function findOneBySlug(string $slug): ?TenantInterface;
+
+    /**
+     * Метод поиска арендатора по уникальному домену.
+     */
+    public function findOneByDomain(string $domain): ?TenantInterface;
 }

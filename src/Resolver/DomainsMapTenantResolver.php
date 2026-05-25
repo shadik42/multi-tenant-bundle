@@ -7,12 +7,13 @@ use SprintF\Bundle\MultiTenant\Tenant\TenantInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Резолвер арендатора на основе хоста запроса и домена, заданного в данных арендатора в БД.
+ * Резолвер арендатора на основе хоста запроса и конфигурации бандла.
  */
-class DomainTenantResolver implements TenantResolverInterface
+class DomainsMapTenantResolver implements TenantResolverInterface
 {
     public function __construct(
         private readonly TenantRegistryInterface $registry,
+        private readonly array $domainsMap = [],
     ) {
     }
 
@@ -25,6 +26,12 @@ class DomainTenantResolver implements TenantResolverInterface
         }
         $host = trim(strtolower($host));
 
-        return $this->registry->findOneByDomain($host);
+        if (!isset($this->domainsMap[$host])) {
+            return null;
+        }
+
+        $slug = $this->domainsMap[$host];
+
+        return $this->registry->findOneBySlug($slug);
     }
 }

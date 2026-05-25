@@ -17,4 +17,9 @@ interface TenantInterface
      * Уникальное символическое имя арендатора.
      */
     public function getSlug(): string;
+
+    /**
+     * Уникальный домен арендатора.
+     */
+    public function getDomain(): ?string;
 }

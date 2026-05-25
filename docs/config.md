@@ -87,13 +87,27 @@ sprint_f_multi_tenant:
 В конфигурации можно настроить базовый домен (относительно которого будет определяться субдомен) и исключаемые из поиска
 арендатора служебные субдомены.
 
+### Домен (domain)
+Активируется указанием
+```yaml
+sprint_f_multi_tenant:
+  
+  # The name of the tenant resolver
+  resolver: domain
+```
+в конфигурации бандла
+
+Работает следующим образом:
+1. Определяется домен запроса
+2. Проводится поиск арендатора по его домену. 
+
 ### Карта доменов (domains map)
 Активируется указанием
 ```yaml
 sprint_f_multi_tenant:
 
   # The name of the tenant resolver
-  resolver: domain
+  resolver: domains_map
 ```
 в конфигурации бандла.
 
@@ -106,16 +120,16 @@ sprint_f_multi_tenant:
 ```yaml
 sprint_f_multi_tenant:
   
-  domain:
+  domains_map:
     # Domains map (full domains to tenant slugs) for use for tenant resolution
-    domains_map: []
+    map: []
 ```
 Настройке подлежит карта соответствий "доменное имя - символьное имя арендатора". Пример:
 ```yaml
 sprint_f_multi_tenant:
   
-  domain:
-    domains_map:
-      - foo.example: foo
-      - test.example: test
+  domains_map:
+    map:
+      foo.example: foo
+      test.example: test
 ```
